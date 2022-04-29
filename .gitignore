@@ -1,0 +1,9 @@
+# Report source
+*.md
+
+# Homework
+hw*/
+
+# Clion file
+.idea/
+cmake-build-debug/
