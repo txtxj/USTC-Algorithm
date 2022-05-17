@@ -5,13 +5,13 @@
 
 #define PI 3.1415926535897932384626
 
-class complex
+class Complex
 {
 public:
 	double x, y;
 
 
-	explicit complex(double a = 0, double b = 0) : x(a), y(b) {}
+	explicit Complex(double a = 0, double b = 0) : x(a), y(b) {}
 
 
 	void make(double a = 0, double b = 0)
@@ -21,21 +21,21 @@ public:
 	}
 
 
-	complex operator+(complex b) const
+	Complex operator+(Complex b) const
 	{
-		return complex(x + b.x, y + b.y);
+		return Complex(x + b.x, y + b.y);
 	}
 
 
-	complex operator-(complex b) const
+	Complex operator-(Complex b) const
 	{
-		return complex(x - b.x, y - b.y);
+		return Complex(x - b.x, y - b.y);
 	}
 
 
-	complex operator*(complex b) const
+	Complex operator*(Complex b) const
 	{
-		return complex(x * b.x - y * b.y, x * b.y + y * b.x);
+		return Complex(x * b.x - y * b.y, x * b.y + y * b.x);
 	}
 };
 
@@ -61,19 +61,19 @@ inline int ReadInteger()
 }
 
 
-void FFT(complex *t, complex *ans, int length, int type)
+void FFT(Complex *t, Complex *ans, int length, int type)
 {
 	if (length == 1)
 	{
 		*ans = *t;
 		return;
 	}
-	complex wn(std::cos(2 * PI/length), type * std::sin(2 * PI/length));
-	complex w(1, 0);
-	auto a0 = new complex[length / 2];
-	auto a1 = new complex[length / 2];
-	auto y0 = new complex[length / 2];
-	auto y1 = new complex[length / 2];
+	Complex wn(std::cos(2 * PI / length), type * std::sin(2 * PI / length));
+	Complex w(1, 0);
+	auto a0 = new Complex[length / 2];
+	auto a1 = new Complex[length / 2];
+	auto y0 = new Complex[length / 2];
+	auto y1 = new Complex[length / 2];
 	for (int i = 0; i < length; i += 2)
 	{
 		a0[i >> 1] = t[i];
@@ -102,11 +102,11 @@ int main()
 	}
 	length <<= 1;
 
-	auto a = new complex[length];
-	auto b = new complex[length];
-	auto x = new complex[length];
-	auto y = new complex[length];
-	auto z = new complex[length];
+	auto a = new Complex[length];
+	auto b = new Complex[length];
+	auto x = new Complex[length];
+	auto y = new Complex[length];
+	auto z = new Complex[length];
 
 	for (int i = 0; i < n; i++)
 	{

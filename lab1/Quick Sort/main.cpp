@@ -20,7 +20,7 @@ public:
 	}
 
 
-	void swap(MyClass &p)
+	void Swap(MyClass &p)
 	{
 		std::swap(x, p.x);
 		std::swap(y, p.y);
@@ -28,7 +28,7 @@ public:
 	}
 
 
-	void make(int a, int b, int c)
+	void Make(int a, int b, int c)
 	{
 		x = a;
 		y = b;
@@ -36,7 +36,7 @@ public:
 	}
 
 
-	void print() const
+	void Print() const
 	{
 		printf("%d %d %d\n", x, y, z);
 	}
@@ -83,11 +83,11 @@ MyClass *Partition(MyClass *st, MyClass *ed)
 		if (*p < *x)
 		{
 			i += 1;
-			i->swap(*p);
+			i->Swap(*p);
 		}
 	}
 	i += 1;
-	i->swap(*ed);
+	i->Swap(*ed);
 	delete x;
 	return i;
 }
@@ -98,7 +98,7 @@ MyClass *RandomPartition(MyClass *st, MyClass *ed)
 	long k = ed - st;
 	std::uniform_int_distribution<long> r(0, k);
 	auto i = st + r(rng);
-	i->swap(*ed);
+	i->Swap(*ed);
 	return Partition(st, ed);
 }
 
@@ -125,12 +125,12 @@ int main()
 		a = ReadInteger();
 		b = ReadInteger();
 		c = ReadInteger();
-		t[i].make(a, b, c);
+		t[i].Make(a, b, c);
 	}
 	QuickSort(t, t + n - 1);
 	for (int i = 0; i < n; i++)
 	{
-		t[i].print();
+		t[i].Print();
 	}
 	delete[] t;
 	return 0;
