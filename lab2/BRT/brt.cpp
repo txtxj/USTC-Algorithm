@@ -491,12 +491,11 @@ public:
 	}
 };
 
-Solution solution;
-
 int main()
 {
 	int n;
 	std::cin >> n;
+	Solution solution;
 	for (int i = 0; i < n; i++)
 	{
 		solution.HandleInstruction();
