@@ -1,32 +1,19 @@
+// Floyd version
 #include <iostream>
 #include <vector>
 
 class Graph
 {
 private:
-	class Edge
-	{
-	public:
-		int to;
-		int val;
-	public:
-		Edge(int _to, int _val)
-		{
-			to = _to;
-			val = _val;
-		}
-		~Edge() = default;
-	};
 	int v;
-	int e;
 	bool negative;
 	int** dis;
 public:
 	static constexpr int infDis = 0x0fffffff;
-	Graph(int vv, int ee)
+public:
+	explicit Graph(int vv)
 	{
 		v = vv + 1;
-		e = ee;
 		negative = false;
 		dis = new int*[v];
 		for (int i = 0; i < v; i++)
@@ -61,9 +48,6 @@ public:
 					dis[i][j] = std::min(dis[i][j], dis[i][k] + dis[k][j]);
 				}
 			}
-		}
-		for (int k = 1; k < v; k++)
-		{
 			for (int i = 1; i < v; i++)
 			{
 				for (int j = 1; j < v; j++)
@@ -71,6 +55,7 @@ public:
 					if (dis[i][j] > dis[i][k] + dis[k][j])
 					{
 						negative = true;
+						return;
 					}
 				}
 			}
@@ -90,7 +75,7 @@ int main()
 {
 	int n, m, u, v, w, q;
 	std::cin >> n >> m;
-	Graph graph(n, m);
+	Graph graph(n);
 	for (int i = 0; i < m; i++)
 	{
 		std::cin >> u >> v >> w;
