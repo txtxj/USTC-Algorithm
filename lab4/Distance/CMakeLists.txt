@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.21)
 project(Floyd)
 project(Johnson)
 
-add_definitions("-DDEBUG")
+add_definitions(-DDEBUG)
 
 set(CMAKE_CXX_STANDARD 14)
 
