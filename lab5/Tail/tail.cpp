@@ -174,7 +174,7 @@ public:
 		while (ans.arr[ans.n - 1] >= 10)
 		{
 			ans.arr[ans.n] = ans.arr[ans.n - 1] / 10;
-			ans.arr[n - 1] %= 10;
+			ans.arr[ans.n - 1] %= 10;
 			ans.n += 1;
 		}
 		return ans;
