@@ -35,24 +35,6 @@ private:
 		}
 		return *this;
 	}
-public:
-	explicit Integer(long long integer = 0)
-	{
-		n = 1;
-		for (auto& i : arr)
-		{
-			i = integer % 10;
-			integer /= 10;
-			if (integer != 0)
-			{
-				n += 1;
-			}
-		}
-	}
-	[[nodiscard]] unsigned int Length() const
-	{
-		return n;
-	}
 	static unsigned int Pow(Integer a, unsigned int b, unsigned int mod)
 	{
 		unsigned int ans = 1;
@@ -68,9 +50,23 @@ public:
 		}
 		return ans;
 	}
+public:
+	explicit Integer(long long integer = 0)
+	{
+		n = 1;
+		for (auto& i : arr)
+		{
+			i = integer % 10;
+			integer /= 10;
+			if (integer != 0)
+			{
+				n += 1;
+			}
+		}
+	}
 	static unsigned int Inverse(const Integer& a, const unsigned int mod)
 	{
-		return Pow(a, mod - 2, mod);
+		return Integer::Pow(a, mod - 2, mod);
 	}
 	bool operator<(const Integer& other) const
 	{
@@ -94,6 +90,33 @@ public:
 			}
 		}
 		return false;
+	}
+	bool operator<=(const Integer& other) const
+	{
+		if (this == &other)
+		{
+			return true;
+		}
+		if (n < other.n)
+		{
+			return true;
+		}
+		if (n > other.n)
+		{
+			return false;
+		}
+		for (int i = (int)n; i >= 0; i--)
+		{
+			if (arr[i] < other.arr[i])
+			{
+				return true;
+			}
+			if (arr[i] > other.arr[i])
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 	Integer operator+(const Integer& other) const
 	{
@@ -191,7 +214,7 @@ public:
 		other(depth);
 		while (depth >= 0)
 		{
-			while (other < ans) // other == ans (impossible)
+			while (other <= ans)
 			{
 				ans -= other;
 			}
@@ -358,7 +381,7 @@ public:
 		cnt += 1;
 	}
 
-	void PrintAnswer(std::ostream& out)
+	void PrintAnswer(std::ostream& out) const
 	{
 		Integer M(1);
 		for (int i = 0; i < k; i++)
@@ -380,8 +403,12 @@ public:
 			unsigned int t = Integer::Inverse(m[i], p[i]);
 			std::cout << "t[" << i << "] = " << t << std::endl;
 			std::cout << "r[" << i << "] = " << r[i] << std::endl;
+			std::cout << "p[" << i << "] = " << p[i] << std::endl;
+			if (m[i] * t % p[i] == 1)
+			{
+				std::cout << "Inverse Decision Pass!" << std::endl;
+			}
 			std::cout << "/******************/" << std::endl;
-			std::cout << ans << " + mul(above) = ";
 			ans += m[i] * t * (unsigned int)r[i];
 			std::cout << ans << std::endl;
 			#else
@@ -399,6 +426,10 @@ int main()
 	std::cin >> x >> y;
 	std::cout << x % y;
 	return 0;
+	#endif
+	#ifdef FILEREAD
+	std::freopen("../test.in", "r", stdin);
+	std::freopen("../res.out", "w", stdout);
 	#endif
 	int k, r, p;
 	std::cin >> k;
