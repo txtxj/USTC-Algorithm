@@ -5,18 +5,16 @@ class Integer
 {
 private:
 	static constexpr unsigned int maxSize = 2048;
-	static constexpr unsigned int bitMod = 10000;
-	static constexpr unsigned int bitShift = 4;
 	unsigned int n;
 	unsigned int arr[maxSize]{};
 public:
 	explicit Integer(long long integer = 0)
 	{
 		n = 1;
-		for (unsigned int& i : arr)
+		for (auto& i : arr)
 		{
-			i = integer % bitMod;
-			integer /= bitMod;
+			i = integer % 10;
+			integer /= 10;
 			if (integer != 0)
 			{
 				n += 1;
@@ -27,43 +25,17 @@ public:
 	{
 		return n;
 	}
-	Integer operator+(const Integer& other) const
+	static Integer Pow(Integer a, unsigned int b, const Integer& mod)
 	{
-		Integer ans;
-		int top = (int)std::max(other.n, n);
-		ans.n = top + 1;
-		ans.arr[0] = 0;
-		for (int i = 0; i < top; i++)
+		Integer ans(1);
+		while (b != 0)
 		{
-			ans.arr[i + 1] = (ans.arr[i] + arr[i] + other.arr[i]) / bitMod;
-			ans.arr[i] = (ans.arr[i] + arr[i] + other.arr[i]) % bitMod;
-		}
-		while (ans.arr[ans.n - 1] == 0 && ans.n > 1)
-		{
-			ans.n -= 1;
-		}
-		return ans;
-	}
-	Integer operator*(const Integer& other) const
-	{
-		Integer ans;
-		ans.n = other.n + n;
-		for (auto& i : ans.arr)
-		{
-			i = 0;
-		}
-		for (int i = 0; i < n; i++)
-		{
-			for (int j = 0; j < other.n; j++)
+			if (b & 1)
 			{
-				ans.arr[i + j] += arr[i] * other.arr[j];
-				ans.arr[i + j + 1] += ans.arr[i + j] / bitMod;
-				ans.arr[i + j] %= bitMod;
+				ans = ans * a % mod;
 			}
-		}
-		while (ans.arr[ans.n - 1] == 0 && ans.n > 1)
-		{
-			ans.n -= 1;
+			a = a * a % mod;
+			b >>= 1;
 		}
 		return ans;
 	}
@@ -90,8 +62,70 @@ public:
 		}
 		return false;
 	}
+	Integer operator+(const Integer& other) const
+	{
+		Integer ans;
+		int top = (int)std::max(other.n, n);
+		ans.n = top + 1;
+		ans.arr[0] = 0;
+		for (int i = 0; i < top; i++)
+		{
+			ans.arr[i + 1] = (ans.arr[i] + arr[i] + other.arr[i]) / 10;
+			ans.arr[i] = (ans.arr[i] + arr[i] + other.arr[i]) % 10;
+		}
+		while (ans.arr[ans.n - 1] == 0 && ans.n > 1)
+		{
+			ans.n -= 1;
+		}
+		return ans;
+	}
+	Integer operator*(const Integer& other) const
+	{
+		Integer ans;
+		ans.n = other.n + n;
+		for (auto& i : ans.arr)
+		{
+			i = 0;
+		}
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < other.n; j++)
+			{
+				ans.arr[i + j] += arr[i] * other.arr[j];
+				ans.arr[i + j + 1] += ans.arr[i + j] / 10;
+				ans.arr[i + j] %= 10;
+			}
+		}
+		while (ans.arr[ans.n - 1] == 0 && ans.n > 1)
+		{
+			ans.n -= 1;
+		}
+		return ans;
+	}
+	Integer operator*(const unsigned int other) const
+	{
+		Integer ans(0);
+		for (int i = 0; i < n; i++)
+		{
+			ans.arr[i] = arr[i] * other;
+		}
+		for (int i = 0; i < n; i++)
+		{
+			ans.arr[i + 1] += ans.arr[i] / 10;
+			ans.arr[i] %= 10;
+		}
+		ans.n = n;
+		while (ans.arr[ans.n - 1] >= 10)
+		{
+			ans.arr[ans.n] = ans.arr[ans.n - 1] / 10;
+			ans.arr[n - 1] %= 10;
+			ans.n += 1;
+		}
+		return ans;
+	}
 	Integer operator%(const Integer& other) const
 	{
+		// TODO: finish big int mod
 		if (*this < other)
 		{
 			return *this;
@@ -100,13 +134,30 @@ public:
 
 		return ans;
 	}
-	Integer& operator=(long long other)
+	Integer operator/(const unsigned int other) const
+	{
+		Integer ans(0);
+		unsigned int tmp = 0;
+		for (int i = (int)n - 1; i >= 0; i--)
+		{
+			tmp *= 10;
+			tmp += arr[i];
+			ans.arr[i] = tmp / other;
+			tmp %= other;
+			if (ans.arr[i] != 0 && ans.n == 1)
+			{
+				ans.n = i + 1;
+			}
+		}
+		return ans;
+	}
+	Integer& operator=(unsigned int other)
 	{
 		n = 1;
-		for (unsigned int& i : arr)
+		for (auto& i : arr)
 		{
-			i = other % bitMod;
-			other /= bitMod;
+			i = other % 10;
+			other /= 10;
 			if (other != 0)
 			{
 				n += 1;
@@ -127,21 +178,22 @@ public:
 		}
 		return *this;
 	}
-	Integer& operator*=(long long other)
+	Integer& operator*=(unsigned int other)
 	{
-		n += 5;
 		for (int i = 0; i < n; i++)
 		{
 			arr[i] *= other;
 		}
 		for (int i = 0; i < n; i++)
 		{
-			arr[i + 1] += arr[i] / bitMod;
-			arr[i] %= bitMod;
+			arr[i + 1] += arr[i] / 10;
+			arr[i] %= 10;
 		}
-		while (arr[n - 1] == 0 && n > 1)
+		while (arr[n - 1] >= 10)
 		{
-			n -= 1;
+			arr[n] = arr[n - 1] / 10;
+			arr[n - 1] %= 10;
+			n += 1;
 		}
 		return *this;
 	}
@@ -152,8 +204,8 @@ public:
 		for (int i = 0; i < top; i++)
 		{
 			arr[i] += other.arr[i];
-			arr[i + 1] += arr[i] / bitMod;
-			arr[i] %= bitMod;
+			arr[i + 1] += arr[i] / 10;
+			arr[i] %= 10;
 		}
 		while (arr[n - 1] == 0 && n > 1)
 		{
@@ -174,8 +226,8 @@ public:
 			for (int j = 0; j < other.n; j++)
 			{
 				ans.arr[i + j] += arr[i] * other.arr[j];
-				ans.arr[i + j + 1] += ans.arr[i + j] / bitMod;
-				ans.arr[i + j] %= bitMod;
+				ans.arr[i + j + 1] += ans.arr[i + j] / 10;
+				ans.arr[i + j] %= 10;
 			}
 		}
 		while (ans.arr[ans.n - 1] == 0 && ans.n > 1)
@@ -189,48 +241,20 @@ public:
 	{
 		std::string str;
 		in >> str;
-		unsigned int len = (int)str.length();
-		x.n = len / bitShift + 1;
-		for (unsigned int i = 0, h = len / 2; i < h; i++)
+		x.n = (int)str.length();
+		for (int i = 0; i < x.n; i++)
 		{
-			std::swap(str[i], str[len - i - 1]);
-		}
-		for (unsigned int i = 0, j = 1, k = 0; i < len; i++, j *= 10)
-		{
-			if (j == bitMod)
-			{
-				j = 1;
-				k += 1;
-			}
-			x.arr[k] = x.arr[k] + (str[i] ^ 48) * j;
+			x.arr[i] = str[x.n - i - 1] ^ 48;
 		}
 		return in;
 	}
-	friend std::ostream& operator<<(std::ostream& out, Integer& x)
+	friend std::ostream& operator<<(std::ostream& out, const Integer& x)
 	{
-		out << x.arr[x.n - 1];
-		for (int i = (int)x.n - 2; i >= 0; i--)
+		for (int i = (int)x.n - 1; i >= 0; i--)
 		{
-			for (int j = bitMod / 10; j >= 1; j /= 10)
-			{
-				out << x.arr[i] / j % 10;
-			}
+			out << x.arr[i];
 		}
 		return out;
-	}
-	static Integer Pow(Integer a, unsigned int b)
-	{
-		Integer ans(1);
-		while (b != 0)
-		{
-			if (b & 1)
-			{
-				ans *= a;
-			}
-			a *= a;
-			b >>= 1;
-		}
-		return ans;
 	}
 };
 
@@ -241,7 +265,6 @@ private:
 	int cnt;
 	int* r;
 	int* p;
-	Integer* m;
 public:
 	explicit Solution(int kk)
 	{
@@ -249,13 +272,11 @@ public:
 		cnt = 0;
 		r = new int[k];
 		p = new int[k];
-		m = new Integer[k];
 	}
 	~Solution()
 	{
 		delete[] r;
 		delete[] p;
-		delete[] m;
 	}
 
 	void AddPair(int rr, int pp)
@@ -265,29 +286,19 @@ public:
 		cnt += 1;
 	}
 
-	int Solve()
+	void PrintAnswer(std::ostream& out)
 	{
+		Integer M(1);
 		for (int i = 0; i < k; i++)
 		{
-			m[i] = 1;
-			for (int j = 0; j < k; j++)
-			{
-				if (i != j)
-				{
-					m[i] *= p[i];
-				}
-			}
-			#ifdef DEBUG
-			std::cout << "/*****************/" << std::endl;
-			std::cout << "m[" << i << "] = " << m[i] << std::endl;
-			std::cout << "/*****************/" << std::endl;
-			#endif
+			M *= p[i];
 		}
 		Integer ans(0);
 		for (int i = 0; i < k; i++)
 		{
-			ans += Integer::Pow(m[i], p[i] - 2);
+			ans += M / p[i] * Integer::Pow(m[i], p[i] - 2, M / p[i]) * (unsigned int)r[i];
 		}
+		out << ans % M;
 	}
 };
 
@@ -311,6 +322,6 @@ int main()
 		std::cin >> r >> p;
 		solution.AddPair(r, p);
 	}
-	std::cout << solution.Solve();
+	solution.PrintAnswer(std::cout);
 	return 0;
 }
