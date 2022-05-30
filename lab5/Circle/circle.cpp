@@ -2,7 +2,7 @@
 #include <iomanip>
 #include <vector>
 
-class Solution
+class Graph
 {
 private:
 	class Edge
@@ -48,7 +48,7 @@ private:
 		}
 	}
 public:
-	explicit Solution(int n)
+	explicit Graph(int n)
 	{
 		v = n + 1;
 		edge = new std::vector<Edge>[v];
@@ -58,7 +58,7 @@ public:
 			dp[i] = new int[v];
 		}
 	}
-	~Solution()
+	~Graph()
 	{
 		delete[] edge;
 		for (int i = 0; i < v; i++)
@@ -71,7 +71,7 @@ public:
 	{
 		edge[from].emplace_back(to, val);
 	}
-	float Solve()
+	float MinAvgCircle()
 	{
 		CalPath();
 		#ifdef DEBUG
@@ -115,12 +115,12 @@ int main()
 {
 	int n, e, u, v, w;
 	std::cin >> n >> e;
-	Solution solution(n);
+	Graph g(n);
 	for (int i = 0; i < e; i++)
 	{
 		std::cin >> u >> v >> w;
-		solution.AddEdge(u, v, w);
+		g.AddEdge(u, v, w);
 	}
-	std::cout << std::fixed << std::setprecision(3) << solution.Solve();
+	std::cout << std::fixed << std::setprecision(3) << g.MinAvgCircle();
 	return 0;
 }
